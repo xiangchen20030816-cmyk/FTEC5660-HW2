@@ -1,0 +1,4 @@
+cv,score,correctness
+adversarial_cv_false_1.pdf,0.1500,not graded: no ground truth for this CV
+adversarial_cv.pdf,0.9500,not graded: no ground truth for this CV
+target_cv.pdf,0.9500,not graded: no ground truth for this CV

@@ -91,9 +91,18 @@ attack the MCP server. See the homework description for the full rules.
 
 ## Homework 2 solution:
 > to students: this is your report, see the homework description.
+While running the code, I frequently encountered the error: "Server disconnected without sending a response." After discussing this with an AI, it appears the issue stems from an unstable network connection to the server, rather than any problem with the code itself. To successfully execute the code, I have relied on multiple retries and reconnection procedures suggested by the AI.
 
 ### Task 1
 > one paragraph describing your solution, and your results on `public_test`.
+CV verification agent was implemented using LangChain, the DeepSeek V4 Flash model and the SocialGraph MCP tools to retrieve and verify candidates' information. It first identifies the correct candidate by comparing names, locations, backgrounds, and other available evidence, then checks the factual claims in each CV, including employment history, job titles, education, graduation years, and so on. The system evaluates semantic equivalence to avoid the erroneous rejection of valid resumes; however, it assigns a lower reliability score if clear factual discrepancies are detected. To enhance robustness, we have also implemented an automatic retry mechanism for transient MCP connection failures. The agent achieved 100% accuracy, with all predictions on the `public_test` dataset being correct.
 
 ### Task 2
 > the attack techniques you used and why you expect them to work.
+Two adversarial approaches were tried to fool the CV verification agent.
+
+The first attempt used prompt injection. Kelly Tsang's actual position at AIA was changed from "Manager" to "Director", and an additional verification note was inserted into the PDF. The note claimed that the different job title was an updated professional designation and suggested a high reliability score. However, this approach failed. The agent identified the discrepancy between the CV and LinkedIn records, ignored the misleading verification note, and assigned a score of 0.10.
+
+The second attempt exploited the difference between human visual perception and machine-based PDF text extraction. Instead of directly replacing the original PDF text, the false title "Director" was visually overlaid on top of "Manager" using an image, while the original text remained in the underlying PDF text layer. Therefore, a human opening the PDF sees "Director", but the text extraction tool used by the AI retrieves "Manager". Since the extracted text matches the candidate's actual LinkedIn information, the agent fails to detect the visually false claim.
+
+This second approach successfully fooled the local verification agent, which assigned the adversarial CV a reliability score of 1.00. Experiments show that once the operating principles of an AI-based verification system are understood, it becomes possible to specifically bypass its assessments or exploit its vulnerabilities.
